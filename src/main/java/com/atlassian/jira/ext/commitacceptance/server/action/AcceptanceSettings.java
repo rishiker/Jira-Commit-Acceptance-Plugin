@@ -40,7 +40,7 @@ public class AcceptanceSettings {
 
     /**
      * If <code>true</code>, then the given custom field must 
-     * match the branch being submitted.
+     * match the string submitted from source control.
      */
     private boolean mustMatchCustomField;
     private String customFieldName;
@@ -99,7 +99,7 @@ public class AcceptanceSettings {
 				(mustBeAssignedToCommiter == other.isMustBeAssignedToCommiter() &&
 				(acceptIssuesFor == other.getAcceptIssuesFor()) &&
 				(mustMatchCustomField == other.isMustMatchCustomField() &&
-				(customFieldName == other.getCustomFieldName())));
+				(customFieldName.equals(other.getCustomFieldName()))));
 	}
 
 	public int hashCode() {
