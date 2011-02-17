@@ -6,8 +6,7 @@
     <version>1.5-SNAPSHOT</version>
 
     <name>JIRA Commit Acceptance Plugin</name>
-    <packaging>jar</packaging>
-
+    <packaging>atlassian-plugin</packaging>
 
     <description>
         This plug-in lets you define certain basic rules that will determine whether a commit to your version control
@@ -95,6 +94,7 @@
                 <configuration>
                     <productVersion>${jira.version}</productVersion>
                     <productDataVersion>${jira.data.version}</productDataVersion>
+                    <log4jProperties>${basedir}/log4j.properties</log4jProperties>
                 </configuration>
             </plugin>
             <plugin>
