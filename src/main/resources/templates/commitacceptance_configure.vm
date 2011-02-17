@@ -21,6 +21,7 @@
 			document.commitAcceptanceSettingsForm.acceptIssuesFor_onlyForThis.disabled = useGlobalRules;
 			document.commitAcceptanceSettingsForm.acceptIssuesFor_oneForThis.disabled = useGlobalRules;
 			document.commitAcceptanceSettingsForm.acceptIssuesFor_any.disabled = useGlobalRules;
+			document.commitAcceptanceSettingsForm.mustMatchCustomField.disabled = useGlobalRules;
 
 			onRulesFormChange();
 		}
@@ -97,6 +98,24 @@
 		<td class="fieldValueArea">
 			$i18n.getText("commitacceptance.field.mustBeAssignedToCommiter.label")<br/>
 	   		<span class="small">$i18n.getText("commitacceptance.field.mustBeAssignedToCommiter.description")</span>
+		</td>
+	</tr>
+	<tr bgcolor="#ffffff">
+		<td class="fieldLabelArea" width="1%" nowrap>
+			<input type="checkbox" name="mustMatchCustomField" value="true" #if($mustMatchCustomField) checked="checked" #end #if(($projectKey != "") && $useGlobalRules) disabled #end onChange="onRulesFormChange()" />
+		</td>
+		<td class="fieldValueArea">
+			$i18n.getText("commitacceptance.field.mustMatchCustomField.label")<br/>
+	   		<span class="small">$i18n.getText("commitacceptance.field.mustMatchCustomField.description")</span>
+		</td>
+	</tr>
+	<tr bgcolor="#ffffff">
+		<td class="fieldLabelArea" width="1%" nowrap>
+			<input type="text" name="customFieldName" #if($customFieldName) value="$action.getCustomFieldName()" #end #if(($projectKey != "") && $useGlobalRules) disabled #end onChange="onRulesFormChange()" />
+		</td>
+		<td class="fieldValueArea">
+			$i18n.getText("commitacceptance.field.customFieldName.label")<br/>
+	   		<span class="small">$i18n.getText("commitacceptance.field.customFieldName.description")</span>
 		</td>
 	</tr>
 	<tr>

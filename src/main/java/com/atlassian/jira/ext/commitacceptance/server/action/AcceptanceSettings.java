@@ -39,8 +39,12 @@ public class AcceptanceSettings {
     private boolean mustBeAssignedToCommiter;
 
     /**
-     * TODO
+     * If <code>true</code>, then the given custom field must 
+     * match the branch being submitted.
      */
+    private boolean mustMatchCustomField;
+    private String customFieldName;
+    
     private int acceptIssuesFor;
 
     public boolean getUseGlobalRules() {
@@ -93,7 +97,9 @@ public class AcceptanceSettings {
 				(mustHaveIssue == other.isMustHaveIssue()) &&
 				(mustBeUnresolved == other.isMustBeUnresolved()) &&
 				(mustBeAssignedToCommiter == other.isMustBeAssignedToCommiter() &&
-				(acceptIssuesFor == other.getAcceptIssuesFor()));
+				(acceptIssuesFor == other.getAcceptIssuesFor()) &&
+				(mustMatchCustomField == other.isMustMatchCustomField() &&
+				(customFieldName == other.getCustomFieldName())));
 	}
 
 	public int hashCode() {
@@ -101,6 +107,24 @@ public class AcceptanceSettings {
 					append(mustHaveIssue).
 					append(mustBeUnresolved).
 					append(mustBeAssignedToCommiter).
-					append(acceptIssuesFor).hashCode();
+					append(acceptIssuesFor).
+					append(mustMatchCustomField).
+					append(customFieldName).hashCode();
+	}
+
+	public boolean isMustMatchCustomField() {
+		return mustMatchCustomField;
+	}
+
+	public void setMustMatchCustomField(boolean mustMatchCustomField) {
+		this.mustMatchCustomField = mustMatchCustomField;
+	}
+
+	public String getCustomFieldName() {
+		return customFieldName;
+	}
+
+	public void setCustomFieldName(String customFieldName) {
+		this.customFieldName = customFieldName;
 	}
 }

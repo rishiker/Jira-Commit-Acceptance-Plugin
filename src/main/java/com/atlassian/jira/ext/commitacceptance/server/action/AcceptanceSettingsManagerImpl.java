@@ -21,6 +21,8 @@ public class AcceptanceSettingsManagerImpl implements AcceptanceSettingsManager 
     public static final String MUST_BE_ASSIGNED_TO_COMMITER_KEY_PREFIX = "jira.plugins.commitacceptance.settings.mustBeAssignedToCommiter";
     public static final String MUST_BE_UNRESOLVED_KEY_PREFIX = "jira.plugins.commitacceptance.settings.mustBeUnresolved";
     public static final String ACCEPT_ISSUES_FOR = "jira.plugins.commitacceptance.settings.acceptIssuesFor";
+    public static final String MUST_MATCH_CUSTOM_FIELD_PREFIX = "jira.plugins.committacceptance.settings.mustMatchCustomField";
+    public static final String CUSTOM_FIELD_PREFIX = "jira.plugins.committacceptance.settings.customField";
 
     /*
      * Services.
@@ -40,6 +42,8 @@ public class AcceptanceSettingsManagerImpl implements AcceptanceSettingsManager 
         acceptanceSettings.setMustBeUnresolved(applicationProperties.getOption(getRuleOptionName(projectKey, MUST_BE_UNRESOLVED_KEY_PREFIX)));
         String acceptIssuesFor = applicationProperties.getString(getRuleOptionName(projectKey, ACCEPT_ISSUES_FOR));
        	acceptanceSettings.setAcceptIssuesFor((acceptIssuesFor != null) ? Integer.parseInt(acceptIssuesFor) : 0);
+       	acceptanceSettings.setMustMatchCustomField(applicationProperties.getOption(getRuleOptionName(projectKey, MUST_MATCH_CUSTOM_FIELD_PREFIX)));
+       	acceptanceSettings.setCustomFieldName(applicationProperties.getString(getRuleOptionName(projectKey, CUSTOM_FIELD_PREFIX)));
 
         return acceptanceSettings;
     }
@@ -50,6 +54,8 @@ public class AcceptanceSettingsManagerImpl implements AcceptanceSettingsManager 
         applicationProperties.setOption(getRuleOptionName(projectKey, MUST_BE_ASSIGNED_TO_COMMITER_KEY_PREFIX), acceptanceSettings.isMustBeAssignedToCommiter());
         applicationProperties.setOption(getRuleOptionName(projectKey, MUST_BE_UNRESOLVED_KEY_PREFIX), acceptanceSettings.isMustBeUnresolved());
         applicationProperties.setString(getRuleOptionName(projectKey, ACCEPT_ISSUES_FOR), Integer.toString(acceptanceSettings.getAcceptIssuesFor()));
+        applicationProperties.setOption(getRuleOptionName(projectKey, MUST_MATCH_CUSTOM_FIELD_PREFIX), acceptanceSettings.isMustMatchCustomField());
+        applicationProperties.setString(getRuleOptionName(projectKey, CUSTOM_FIELD_PREFIX), acceptanceSettings.getCustomFieldName());
     }
 
     /**

@@ -55,7 +55,7 @@ public class ConfigureAction extends JiraWebActionSupport {
     	if(!isHasPermission(Permissions.ADMINISTER)) {
     		return ERROR;
     	}
-
+    	
         if (submitted == null) {
             // load old settings
         	logger.info("Loading commit acceptance settings for [" + projectKey + "]");
@@ -120,6 +120,22 @@ public class ConfigureAction extends JiraWebActionSupport {
         this.submitted = submitted;
     }
 
+	public void setMustMatchCustomField(boolean mustMatchCustomField) {
+		settings.setMustMatchCustomField(mustMatchCustomField);
+	}
+	
+	public void setCustomFieldName(String customFieldName) {
+		settings.setCustomFieldName(customFieldName);
+	}
+	
+	public boolean getMustMatchCustomField() {
+		return settings.isMustMatchCustomField();
+	}
+	
+	public String getCustomFieldName() {
+		return settings.getCustomFieldName();
+	}
+	
 	/**
 	 * Returns the list of all available projects.
 	 */

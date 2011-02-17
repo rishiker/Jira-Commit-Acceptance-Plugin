@@ -10,18 +10,22 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.atlassian.core.user.UserUtils;
+import com.atlassian.jira.ComponentManager;
 import com.atlassian.jira.ext.commitacceptance.server.action.AcceptanceSettings;
 import com.atlassian.jira.ext.commitacceptance.server.action.AcceptanceSettingsManager;
 import com.atlassian.jira.ext.commitacceptance.server.evaluator.predicate.AreIssuesAssignedToPredicate;
 import com.atlassian.jira.ext.commitacceptance.server.evaluator.predicate.AreIssuesInProjectPredicate;
 import com.atlassian.jira.ext.commitacceptance.server.evaluator.predicate.AreIssuesUnresolvedPredicate;
+import com.atlassian.jira.ext.commitacceptance.server.evaluator.predicate.DoesCommitMatchCustomField;
 import com.atlassian.jira.ext.commitacceptance.server.evaluator.predicate.HasIssueInProjectPredicate;
 import com.atlassian.jira.ext.commitacceptance.server.evaluator.predicate.HasIssuePredicate;
 import com.atlassian.jira.ext.commitacceptance.server.evaluator.predicate.JiraPredicate;
 import com.atlassian.jira.ext.commitacceptance.server.exception.InvalidAcceptanceArgumentException;
 import com.atlassian.jira.ext.commitacceptance.server.exception.PredicateViolatedException;
+import com.atlassian.jira.issue.CustomFieldManager;
 import com.atlassian.jira.issue.Issue;
 import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.issue.fields.CustomField;
 import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.util.JiraKeyUtils;
@@ -69,10 +73,14 @@ public class EvaluateService {
 	 * @param committerName a name of the person that commiting a code.
 	 * @param projectKeys is the key(s) of JIRA project(s) where the commit belongs. This can be multiple keys separated by comma like "TST,ARP,PLG".  If a key is '*', the global settings are used.
 	 * @param commitMessage a message that a committer entered before commiting.
+	 * @param fieldValue value that must match the custom field if enabled.
 	 * @return a string like <code>"status|comment"</code>, where <code>status true</code> if the commit is accepted and <code>false</code> if rejected.
 	 */
-	public String acceptCommit(String userName, String password, String committerName, String projectKeys, String commitMessage) {// FIXME change in scripts
+	public String acceptCommit(String userName, String password, String committerName, String projectKeys, String commitMessage, String fieldValue) {
 		logger.info("Evaluating commit from \"" + committerName + "\" in [" + projectKeys + "]");
+		if (fieldValue != null && fieldValue.length() > 0) {
+			logger.info("value to match is \"" + fieldValue + "\"");
+		} 
 
 		String result = null;
 		try {
@@ -84,6 +92,7 @@ public class EvaluateService {
 			committerName = StringUtils.trim(committerName);
 			projectKeys = StringUtils.trim(projectKeys);
 			commitMessage = StringUtils.trim(commitMessage);
+			fieldValue = StringUtils.trim(fieldValue);
 
 			// test SCM login and password
 			authenticateUser(userName, password);
@@ -119,7 +128,7 @@ public class EvaluateService {
 				Set issues = loadIssuesByMessage(commitMessage);
 
 				// check issues with acceptance settings.
-				String projectResult = checkIssuesAcceptance(committerName, project, issues);
+				String projectResult = checkIssuesAcceptance(committerName, project, issues, fieldValue);
 				if(projectResult == null) {
 					projectKeyAcceptedBy = projectKey;
 					break;
@@ -233,13 +242,16 @@ public class EvaluateService {
  	 * @param project to check against or <code>null</code> if checking against global settings.
  	 * @param committerName a committer name.
  	 * @param issues a set of issues to be checked.
+ 	 * @param customFieldValue value to be checked against the custom field.
 	 */
-	protected String checkIssuesAcceptance(String committerName, Project project, Set issues) {
+	protected String checkIssuesAcceptance(String committerName, Project project, Set issues, String customFieldValue) {
         if(settings.getUseGlobalRules()) {
     		// load global rules if those override the project specific ones
     		logger.debug("Using global rules");
         	settings = settingsManager.getSettings(null);
     	}
+        CustomFieldManager cfm = ComponentManager.getInstance().getCustomFieldManager();
+        CustomField cf = cfm.getCustomFieldObjectByName(settings.getCustomFieldName());
 
 		// construct
 		List predicates = new ArrayList();
@@ -253,6 +265,9 @@ public class EvaluateService {
 			}
 			if(settings.isMustBeAssignedToCommiter()) {
 				predicates.add(new AreIssuesAssignedToPredicate(committerName));
+			}
+			if(settings.isMustMatchCustomField()) {
+				predicates.add(new DoesCommitMatchCustomField(cf, customFieldValue));
 			}
 			if(project != null) {
 				if(settings.getAcceptIssuesFor() == AcceptanceSettings.ONE_FOR_THIS) {

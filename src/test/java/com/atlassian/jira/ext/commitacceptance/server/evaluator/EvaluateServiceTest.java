@@ -83,14 +83,14 @@ public class EvaluateServiceTest extends MockObjectTestCase {
         mockCredentialsProvider.expects(once()).method("authenticate").withAnyArguments().will(returnValue(false));
         mockProviderAccessor.expects(atLeastOnce()).method("getCredentialsProvider").withAnyArguments().will(returnValue(credentialsProvider));
 
-        assertFalse(isCommitAccepted(evaluateService.acceptCommit("dchui", "password", "dchui", "TST, TEST", "TST-1")));
+        assertFalse(isCommitAccepted(evaluateService.acceptCommit("dchui", "password", "dchui", "TST, TEST", "TST-1", null)));
     }
 
     public void testAccessCommitWithNoProjectKeys() {
         mockCredentialsProvider.expects(once()).method("authenticate").withAnyArguments().will(returnValue(true));
         mockProviderAccessor.expects(atLeastOnce()).method("getCredentialsProvider").withAnyArguments().will(returnValue(credentialsProvider));
 
-        assertFalse(isCommitAccepted(evaluateService.acceptCommit("dchui", "password", "dchui", StringUtils.EMPTY, "TST-1")));
+        assertFalse(isCommitAccepted(evaluateService.acceptCommit("dchui", "password", "dchui", StringUtils.EMPTY, "TST-1", null)));
     }
 
     public void testAccessCommitWithInvalidProjectKeys() {
@@ -98,7 +98,7 @@ public class EvaluateServiceTest extends MockObjectTestCase {
         mockProviderAccessor.expects(atLeastOnce()).method("getCredentialsProvider").withAnyArguments().will(returnValue(credentialsProvider));
         mockProjectManager.expects(once()).method("getProjectObjByKey").with(eq("TST")).will(returnValue(null));
 
-        assertFalse(isCommitAccepted(evaluateService.acceptCommit("dchui", "password", "dchui", "TST", "TST-1")));
+        assertFalse(isCommitAccepted(evaluateService.acceptCommit("dchui", "password", "dchui", "TST", "TST-1", null)));
     }
 
     public void testAccessCommitWithWithNoIssueKeysAndGlobalSettings() {
@@ -119,7 +119,7 @@ public class EvaluateServiceTest extends MockObjectTestCase {
         /* Since no issues are referred by the commit message, there are no issues to check against. We should allow the
          * user to commit the code in this sense.
          */
-        assertTrue(isCommitAccepted(evaluateService.acceptCommit("dchui", "password", "dchui", "*", StringUtils.EMPTY)));
+        assertTrue(isCommitAccepted(evaluateService.acceptCommit("dchui", "password", "dchui", "*", StringUtils.EMPTY, null)));
         mockAcceptanceSettingsManager.verify();
     }
 
@@ -143,7 +143,7 @@ public class EvaluateServiceTest extends MockObjectTestCase {
         /* Since the commit message contains issue keys which do not point to existing issues, we don't allow to commit
          * to happen.
          */
-        assertFalse(isCommitAccepted(evaluateService.acceptCommit("dchui", "password", "dchui", "*", "TST-1")));
+        assertFalse(isCommitAccepted(evaluateService.acceptCommit("dchui", "password", "dchui", "*", "TST-1", null)));
         mockAcceptanceSettingsManager.verify();
     }
 
@@ -175,7 +175,7 @@ public class EvaluateServiceTest extends MockObjectTestCase {
             }
         };
         
-        assertTrue(isCommitAccepted(evaluateService.acceptCommit("dchui", "password", "dchui", "*", "TST-1")));
+        assertTrue(isCommitAccepted(evaluateService.acceptCommit("dchui", "password", "dchui", "*", "TST-1", null)));
         mockAcceptanceSettingsManager.verify();
     }
 
