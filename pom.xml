@@ -1,19 +1,12 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
-    <parent>
-        <groupId>com.atlassian.jira.plugins</groupId>
-        <artifactId>jira-plugin-base</artifactId>
-        <version>15</version>
-    </parent>
-
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.atlassian.jira.ext</groupId>
     <artifactId>commitacceptance</artifactId>
     <version>1.5-SNAPSHOT</version>
 
     <name>JIRA Commit Acceptance Plugin</name>
-    <packaging>jar</packaging>
-
+    <packaging>atlassian-plugin</packaging>
 
     <description>
         This plug-in lets you define certain basic rules that will determine whether a commit to your version control
@@ -91,7 +84,27 @@
             The following plugin definitions are required to invoke functions that
             build run-time environment for running integration tests against JIRA
         -->
-        <plugins>
+		<plugins>
+
+            <plugin>
+                <groupId>com.atlassian.maven.plugins</groupId>
+                <artifactId>maven-jira-plugin</artifactId>
+                <version>3.2.3</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <productVersion>${jira.version}</productVersion>
+                    <productDataVersion>${jira.data.version}</productDataVersion>
+                    <log4jProperties>${basedir}/log4j.properties</log4jProperties>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
@@ -177,6 +190,12 @@ client.scm.perl.path=${test.perl.path}
 
     <dependencies>
         <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>atlassian-jira</artifactId>
+            <version>${jira.version}</version>
+            <scope>provided</scope>
+        </dependency>        
+        <dependency>
             <groupId>jmock</groupId>
             <artifactId>jmock-cglib</artifactId>
             <version>1.2.0</version>
@@ -188,11 +207,24 @@ client.scm.perl.path=${test.perl.path}
             <version>1.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.atlassian.jira</groupId>
+            <artifactId>jira-func-tests</artifactId>
+            <version>${jira.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <properties>
         <atlassian.plugin.application.version.min>4.0</atlassian.plugin.application.version.min>
 
+		<maven.test.skip>true</maven.test.skip>
         <test.perl.path>/usr/bin/perl</test.perl.path>
         <test.python.path>/usr/bin/python</test.python.path>
 
@@ -203,6 +235,9 @@ client.scm.perl.path=${test.perl.path}
         <jdkLevel>1.5</jdkLevel>
 
         <jvmargs>-XX:+HeapDumpOnOutOfMemoryError -XX:MaxPermSize=384m -Xms128m -Xmx564m</jvmargs>
+
+		<jira.version>4.2.4-b591</jira.version>
+        <jira.data.version>4.1.1</jira.data.version>
     </properties>
 
 </project>
