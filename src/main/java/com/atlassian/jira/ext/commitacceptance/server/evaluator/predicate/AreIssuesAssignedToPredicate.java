@@ -1,6 +1,5 @@
 package com.atlassian.jira.ext.commitacceptance.server.evaluator.predicate;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import com.atlassian.core.user.UserUtils;
@@ -25,21 +24,18 @@ public class AreIssuesAssignedToPredicate extends AbstractPredicate {
 		this.assigneeName = assigneeName;
 	}
 
-	public void evaluate(Set issues) {
-		for (Iterator it = issues.iterator(); it.hasNext();) {
-			Issue issue = (Issue)it.next();
-
+	public void evaluate(Set<Issue> issues) {
+		
+		for (Issue issue : issues) {
 			// if at least one issue is not assigned to the correct person.
 			if ((issue.getAssigneeId() == null) || (!issue.getAssigneeId().equals(assigneeName))) {
 				User assignee = null;
 				
 				try {
 					assignee = getUser();
-//					cause = "Issue [" + issue.getKey() + "] must be assigned to " + assigneeName + " (" + assignee.getFullName() + ").";
 				} catch (EntityNotFoundException e) {
-//					cause = "Issue [" + issue.getKey() + "] is not assigned to the correct person.";
+					assignee = null;
 				}
-
 				throw new PredicateViolatedException(getErrorMessage(issue, assignee));
 			}
 		}

@@ -1,6 +1,5 @@
 package com.atlassian.jira.ext.commitacceptance.server.evaluator.predicate;
 
-import java.util.Iterator;
 import java.util.Set;
 
 import com.atlassian.jira.ext.commitacceptance.server.exception.PredicateViolatedException;
@@ -21,14 +20,12 @@ public class HasIssueInProjectPredicate extends AbstractPredicate {
 		this.project = project;
 	}
 
-	public void evaluate(Set issues) {
+	public void evaluate(Set<Issue> issues) {
 		if (project == null) {
 			throw new PredicateViolatedException(getErrorMessageWhenUsedInGlobalContext());
 		}
 
-		for (Iterator it = issues.iterator(); it.hasNext();) {
-			Issue issue = (Issue)it.next();
-
+		for (Issue issue : issues) {
 			// If we found one, we're done
 			if (project.equals(issue.getProjectObject())) {
 				return;

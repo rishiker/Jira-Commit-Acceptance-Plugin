@@ -7,8 +7,8 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.ofbiz.core.entity.GenericValue;
 
+import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.jira.security.Permissions;
 import com.atlassian.jira.web.action.JiraWebActionSupport;
@@ -139,12 +139,12 @@ public class ConfigureAction extends JiraWebActionSupport {
 	/**
 	 * Returns the list of all available projects.
 	 */
-    public List getProjects() {
-    	List projects = new ArrayList(projectManager.getProjects());
-    	Collections.sort(projects, new Comparator() {
-			public int compare(Object obj1, Object obj2) {
-				return ((GenericValue)obj1).getString("key").compareTo(((GenericValue)obj2).getString("key"));
-			}
+    public List<Project> getProjects() {
+    	List<Project> projects = new ArrayList<Project>(projectManager.getProjectObjects());
+    	Collections.sort(projects, new Comparator<Project>() {
+    		public int compare(Project o1, Project o2) {
+    			return o1.getKey().compareTo(o2.getKey());
+    		}
     	});
     	return projects;
     }

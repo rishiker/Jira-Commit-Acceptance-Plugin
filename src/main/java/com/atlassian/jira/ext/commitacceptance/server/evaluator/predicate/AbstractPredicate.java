@@ -13,19 +13,5 @@ public abstract class AbstractPredicate implements JiraPredicate {
 	protected I18nHelper getI18nHelper() {
 		return getJiraAuthenticationContext().getI18nHelper();
 	}
-
-//    private Locale getLocaleFromUser(final User user)
-//    {
-//        if (user != null)
-//        {
-//            final JiraUserPreferences userPrefs = new JiraUserPreferences(user);
-//            final String localeStr = userPrefs.getString(PreferenceKeys.USER_LOCALE);
-//
-//            if (!StringUtils.isBlank(localeStr))
-//            {
-//                return JiraLocaleUtils.parseLocale(localeStr);
-//            }
-//        }
-//        return ComponentManager.getInstance().getApplicationProperties().getDefaultLocale();
-//    }
+	
 }

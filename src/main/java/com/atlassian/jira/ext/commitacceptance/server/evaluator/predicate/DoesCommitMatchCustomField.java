@@ -1,6 +1,5 @@
 package com.atlassian.jira.ext.commitacceptance.server.evaluator.predicate;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -26,12 +25,11 @@ public class DoesCommitMatchCustomField implements JiraPredicate {
 		this.customField = customField;
 	}
 
-	public void evaluate(Set issues) {
+	public void evaluate(Set<Issue> issues) {
 		String cause = null;
 
-		for (Iterator it = issues.iterator(); it.hasNext();) {
+		for (Issue issue : issues) {
 			try {
-				Issue issue = (Issue)it.next();
 				List<String> allowedValues;
 
 				// get the allowed branch for the issue if set

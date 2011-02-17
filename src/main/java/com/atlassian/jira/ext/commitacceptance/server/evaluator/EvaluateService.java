@@ -2,7 +2,6 @@ package com.atlassian.jira.ext.commitacceptance.server.evaluator;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -125,7 +124,7 @@ public class EvaluateService {
 				settings = settingsManager.getSettings((project == null) ? null : project.getKey());
 
 				// parse the commit message and collect issues.
-				Set issues = loadIssuesByMessage(commitMessage);
+				Set<Issue> issues = loadIssuesByMessage(commitMessage);
 
 				// check issues with acceptance settings.
 				String projectResult = checkIssuesAcceptance(committerName, project, issues, fieldValue);
@@ -216,22 +215,21 @@ public class EvaluateService {
 	 *
 	 * @return a set of issues extracted from the commit message.
 	 */
-	private Set loadIssuesByMessage(String commitMessage) {
+	private Set<Issue> loadIssuesByMessage(String commitMessage) {
 		// Parse a commit message and get issue keys it contains.
-		List issueKeys = getIssueKeysFromString(commitMessage);
+		List<String> issueKeys = getIssueKeysFromString(commitMessage);
 
 		// Collect issues.
-		Set issues = new HashSet();
-		for (Iterator it = issueKeys.iterator(); it.hasNext();) {
-			Issue issue = loadIssue((String)it.next());
+		Set<Issue> issues = new HashSet<Issue>();
+		for (String issueKey : issueKeys) {
 			// Put it into the set of issues.
-			issues.add(issue);
+			issues.add(loadIssue(issueKey));
 		}
 
 		return issues;
 	}
 
-    protected List getIssueKeysFromString(String commitMessage) {
+    protected List<String> getIssueKeysFromString(String commitMessage) {
         return JiraKeyUtils.getIssueKeysFromString(commitMessage);
     }
 
@@ -244,7 +242,7 @@ public class EvaluateService {
  	 * @param issues a set of issues to be checked.
  	 * @param customFieldValue value to be checked against the custom field.
 	 */
-	protected String checkIssuesAcceptance(String committerName, Project project, Set issues, String customFieldValue) {
+	protected String checkIssuesAcceptance(String committerName, Project project, Set<Issue> issues, String customFieldValue) {
         if(settings.getUseGlobalRules()) {
     		// load global rules if those override the project specific ones
     		logger.debug("Using global rules");
@@ -254,7 +252,7 @@ public class EvaluateService {
         CustomField cf = cfm.getCustomFieldObjectByName(settings.getCustomFieldName());
 
 		// construct
-		List predicates = new ArrayList();
+		List<JiraPredicate> predicates = new ArrayList<JiraPredicate>();
 
 		try {
 			if(settings.isMustHaveIssue()) {
@@ -278,8 +276,8 @@ public class EvaluateService {
 			}
 
 			// evaluate
-			for(Iterator it = predicates.iterator(); it.hasNext();) {
-				((JiraPredicate)it.next()).evaluate(issues);
+			for (JiraPredicate jp : predicates) {
+				jp.evaluate(issues);
 			}
 		} catch(PredicateViolatedException ex) {
 			return ex.getMessage();
